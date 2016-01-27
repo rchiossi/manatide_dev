@@ -27,7 +27,7 @@ class GenericObject(object):
         self.controller = controller
 
     def __str__(self):
-        return "GenericObject[{}:{}]".format(self.name, self.id[:8])
+        return "GenericObject[{}:{}]".format(self.name, self.id.hex[:8])
 
 class Card(GenericObject):
     def __init__(self):
@@ -48,7 +48,7 @@ class Card(GenericObject):
         log.e("Unimplemented description for {}".format(self))
 
     def __str__(self):
-        return "Card[{}:{}]".format(self.name, self.id[:8])
+        return "Card[{}:{}]".format(self.name, self.id.hex[:8])
 
 
 class Ability(GenericObject):
@@ -59,4 +59,4 @@ class Ability(GenericObject):
         log.e("Unimplemented description for {}".format(self))
 
     def __str__(self):
-        return "Ability[{}:{}]".format(self.name, self.id[:8])
+        return "Ability[{}:{}]".format(self.name, self.id.hex[:8])

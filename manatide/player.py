@@ -3,7 +3,7 @@ import uuid
 from manatide.deck import Deck
 
 class Player(object):
-    def __init__(self, deckname, read_cb, write_cb):
+    def __init__(self, deckname):
         if deckname is None:
             log.e("Invalid deck name")
 
@@ -11,6 +11,22 @@ class Player(object):
 
         self.deck = Deck(deckname)
 
-        self.read = read_cb
-        self.write = write_cb
+    def read():
+        log.e("Player read() unimplemented")
+
+    def write():
+        log.e("Player write() unimplemented")
+
+    def __str__(self):
+        return "Player[{}]".format(self.id.hex[:8])
+
+
+class ConsolePlayer(Player):
+    def read(self):
+        return input('{}: '.format(self))
+
+    def write(self, cmd):
+        print('>: {}'.format(cmd))
+
+
 
