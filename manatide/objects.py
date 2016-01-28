@@ -9,7 +9,6 @@ class GenericObject(object):
         self.id = None
         self.id_history = []
 
-        self.name = name
         self.zone = None
         self.previous_zone = None
         self.owner = None
@@ -30,6 +29,11 @@ class GenericObject(object):
         return "GenericObject[{}:{}]".format(self.name, self.id.hex[:8])
 
 class Card(GenericObject):
+    supertype = []
+    type = []
+    subtype = []
+    activated_abilities = []
+
     def __init__(self):
         super().__init__()
 
@@ -38,15 +42,6 @@ class Card(GenericObject):
         self.facedown = False
         self.phaseout = False
 
-        self.type = []
-        self.subtype = []
-        self.supertype = []
-
-        self.description()
-
-    def description():
-        log.e("Unimplemented description for {}".format(self))
-
     def __str__(self):
         return "Card[{}:{}]".format(self.name, self.id.hex[:8])
 
@@ -54,9 +49,6 @@ class Card(GenericObject):
 class Ability(GenericObject):
     def __init__(self):
         self.description()
-
-    def description():
-        log.e("Unimplemented description for {}".format(self))
 
     def __str__(self):
         return "Ability[{}:{}]".format(self.name, self.id.hex[:8])

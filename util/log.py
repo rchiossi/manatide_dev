@@ -5,7 +5,7 @@ import os
 
 class log:
     log_name = None
-    log_level = 3
+    log_level = 4
 
     @staticmethod
     def _log(entry, log_level):
@@ -23,14 +23,19 @@ class log:
         raise(Exception(msg))
 
     @staticmethod
+    def w(msg):
+        entry = "[%s][*] %s" % (time.strftime("%I:%M.%S"), msg)
+        log._log(entry, 1)
+
+    @staticmethod
     def i(msg):
         entry = "[%s] %s" % (time.strftime("%I:%M.%S"), msg)
-        log._log(entry, 1)
+        log._log(entry, 2)
 
     @staticmethod
     def d(msg):
         entry = "[%s][*] %s" % (time.strftime("%I:%M.%S"), msg)
-        log._log(entry, 2)
+        log._log(entry, 3)
 
     @staticmethod
     def init_logfile(dirname=None):

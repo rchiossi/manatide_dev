@@ -30,6 +30,15 @@ class Game(object):
 
         self.current_player = None
 
+        self.manapool = {
+                "black": 0,
+                "blue": 0,
+                "gree": 0,
+                "red": 0,
+                "white": 0,
+                "colorless": 0,
+                }
+
         self.zones = {
                 "battlefield": Zone("battlefield"),
                 "stack": Zone("stack"),
@@ -40,14 +49,6 @@ class Game(object):
 
         for player in players:
             library = Zone("library")
-
-            for card_name, amount in player.deck.main.items():
-                for i in range(int(amount)):
-                    #load card
-                    #card = Card(card_name)
-                    #card.load(library, player)
-                    pass
-
             library.exhausted = False
 
             self.zones["library", player.id] = library

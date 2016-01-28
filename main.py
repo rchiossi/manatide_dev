@@ -9,7 +9,7 @@ from manatide.zone import Zone
 from util.log import log
 
 def main():
-    players = [ConsolePlayer("/home/rchiossi/delver.txt"), ConsolePlayer("/home/rchiossi/delver.txt")]
+    players = [ConsolePlayer("test_deck.txt"), ConsolePlayer("test_Deck.txt")]
 
     game = Game(players)
 

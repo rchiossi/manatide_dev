@@ -29,16 +29,16 @@ class EventQueue(object):
         log.i("EventQueue: {}".format(event))
 
         for obj in game.objects:
-            if event.handler in obj.__dict__.keys():
-                getattr(obj, event.handler)(event)
+            if event.hook in obj.__dict__.keys():
+                getattr(obj, event.hook)(event)
 
-        getattr(game.rules, event.handler)(event)
+        getattr(game.rules, event.hook)(event)
 
         return event.process(self.game)
 
 
 class Event(object):
-    handler = None
+    hook = None
 
     def __init__(self, player):
         self.status = EventStatus.UNVERIFIED
@@ -60,14 +60,16 @@ class Event(object):
             self.status = status
 
             if status is EventStatus.ABORTED:
-                return
+                return False
+
+        return self.status is EventStatus.OK 
 
     def __str__(self):
         return self.__class__.__name__
 
 
 class EventTransition(Event):
-    handler = "hook_transition"
+    hook = "hook_transition"
 
     def __init__(self, player, objs, zone):
         super().__init__(player)
@@ -82,22 +84,62 @@ class EventTransition(Event):
         self.zone = zone
 
     def process(self, game):
-        self.process_hooks(game, "pre")
-
-        if self.status is not EventStatus.OK:
+        if not self.process_hooks(game, "pre"):
             return self.status
 
         for obj in self.objs:
             self.zone.stage_obj(obj)
 
-        self.process_hooks(game, "ongoing")
-
-        if self.status is not EventStatus.OK:
+        if not self.process_hooks(game, "ongoing"):
             return self.status
 
         self.zone.commit_staged()
 
-        self.process_hooks(game, "post")
+        return self.process_hooks(game, "post")
 
-        return self.status
+
+class EventTap(Event):
+    hook = "hook_tap"
+
+    def __init__(self, player, objs, linked_event=None):
+        if objs is None:
+            log.e("No object for event {}".format(self))
+
+        self.objs = objs
+        self.linked_event = linked_event
+
+    def process(self, game):
+        if not self.process_hooks(game, "pre"):
+            return self.status
+
+        if not self.process_hooks(game, "ongoing"):
+            return self.status
+
+        for obj in self.objs:
+            obj.tapped = True
+
+        if self.linked_event is not None:
+            game.event_queue.queue(linked_event)
+
+        return self.process_hooks(game, "post")
+
+
+class EventAddMana(Event):
+    hook = "hook_add_mana"
+
+    def __init__(self, player, color, amount=1):
+        self.color = color
+        self.amount = amount 
+
+    def process(self, game):
+        if not self.process_hooks(game, "pre"):
+            return self.status
+
+        if not self.process_hooks(game, "ongoing"):
+            return self.status
+
+        game.manapool[self.color] += self.amount
+
+        return self.process_hooks(game, "post")
+
 
