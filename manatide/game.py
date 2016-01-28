@@ -1,3 +1,4 @@
+import collections
 import random
 import uuid
 
@@ -25,10 +26,8 @@ class Game(object):
         #TODO: Load rules
         self.rules = []
 
-        self.players = players
+        self.players = collections.deque(players)
         self.active_player = None
-
-        self.current_player = None
 
         self.manapool = {
                 "black": 0,
@@ -56,12 +55,10 @@ class Game(object):
             self.zones["graveyard", player.id] = Zone("graveyard")
 
     def set_starting_player(self, pid):
-        for player in self.players:
-            if player.id is not pid:
-                continue
+        while self.players[0].id is not pid:
+            self.players.rotate(1)
 
-            self.current_player = player
-            self.active_player = player
+        self.active_player = self.players[0]
 
     def __str__(self):
         return "Game[{}]".format(self.id)

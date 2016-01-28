@@ -2,6 +2,9 @@ from enum import Enum
 
 from manatide.event import EventQueue
 from manatide.event import EventStatus
+
+from manatide.event import EventPriorityPass
+
 from manatide.game import GameState
 
 from util.log import log
@@ -21,10 +24,12 @@ class GameLoop(object):
             while self.event_queue.step() is not None:
                 continue
 
-            self.game.current_player.write("Waiting for input")
-            cmd = self.game.current_player.read()
+            self.game.players[0].write("Waiting for input")
+            cmd = self.game.players[0].read()
 
             print("echo: {}".format(cmd))
 
             if 'exit' in cmd:
                 self.game.state = GameState.TERMINATED
+            elif 'pass' in cmd:
+                self.event_queue.queue(EventPriorityPass(self.game.players[0]))
