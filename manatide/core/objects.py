@@ -1,6 +1,6 @@
 import uuid
 
-from util.log import log
+from manatide.util.log import log
 
 class GenericObject(object):
     name = None

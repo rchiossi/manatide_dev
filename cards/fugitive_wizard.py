@@ -1,6 +1,6 @@
-from manatide.objects import Card
-from manatide.types import Types
-from manatide.types import CreatureTypes
+from manatide.core.objects import Card
+from manatide.core.types import Types
+from manatide.core.types import CreatureTypes
 
 class FugitiveWizard(Card):
     name = "Fugitive Wizard"

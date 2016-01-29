@@ -1,6 +1,6 @@
 import uuid
 
-from manatide.deck import Deck
+from manatide.core.deck import Deck
 
 class Player(object):
     def __init__(self, deckname):

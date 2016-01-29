@@ -4,12 +4,12 @@ import uuid
 
 from enum import Enum
 
-from manatide.objects import Card
-from manatide.zone import Zone
+from manatide.core.objects import Card
+from manatide.core.zone import Zone
 
 from manatide.rules import RulePriorityPass
 
-from util.log import log
+from manatide.util.log import log
 
 class GameState(Enum):
     RUNNING = 0

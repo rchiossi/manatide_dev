@@ -1,13 +1,12 @@
 from enum import Enum
 
-from manatide.events import EventQueue
-from manatide.events import EventStatus
+from manatide.core.event import EventQueue
+from manatide.core.event import EventStatus
+from manatide.core.game import GameState
 
-from manatide.events import EventPriorityPass
+from manatide.events.event_priority_pass import EventPriorityPass
 
-from manatide.game import GameState
-
-from util.log import log
+from manatide.util.log import log
 
 class GameLoop(object):
     def __init__(self, game):

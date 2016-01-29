@@ -1,6 +1,6 @@
 from enum import Enum
 
-from util.log import log
+from manatide.util.log import log
 
 class EventStatus(Enum):
     ABORTED = 0
@@ -20,7 +20,7 @@ class EventQueue(object):
             return
 
         for rule in self.game.rules:
-            if rule.filter(event, self.game):
+            if rule.check_filter(event, self.game):
                 rule.apply(event)
 
         if priority:
@@ -92,56 +92,4 @@ class Event(object):
 
     def __str__(self):
         return self.__class__.__name__
-
-
-class EventTransition(Event):
-    def __init__(self, player, objs, zone):
-        super().__init__(player)
-
-        if objs is None:
-            log.e("No object for event {}".format(self))
-
-        if zone is None:
-            log.e("No zone for event {}".format(self))
-
-        self.objs = objs
-        self.zone = zone
-
-    def prepare(self, game):
-        for obj in self.objs:
-            self.zone.stage_obj(obj)
-
-    def resolve(self, name):
-        self.zone.commit_staged()
-
-
-class EventTap(Event):
-    def __init__(self, player, objs, linked_event=None):
-        if objs is None:
-            log.e("No object for event {}".format(self))
-
-        self.objs = objs
-        self.linked_event = linked_event
-
-    def resolve(self, game):
-        for obj in self.objs:
-            obj.tapped = True
-
-        if self.linked_event is not None:
-            game.event_queue.queue(linked_event)
-
-
-class EventAddMana(Event):
-    def __init__(self, player, color, amount=1):
-        self.color = color
-        self.amount = amount
-
-    def resolve(self, game):
-        game.manapool[self.color] += self.amount
-
-
-class EventPriorityPass(Event):
-    def resolve(self, game):
-        game.players.rotate(1)
-
 

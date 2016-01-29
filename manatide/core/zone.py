@@ -1,6 +1,6 @@
 import uuid
 
-from util.log import log
+from manatide.util.log import log
 
 class Zone(object):
     def __init__(self, name):

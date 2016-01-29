@@ -1,7 +1,10 @@
-from manatide.objects import Card
-from manatide.types import SuperTypes
-from manatide.types import Types
-from manatide.types import LandTypes
+from manatide.core.objects import Card
+from manatide.core.types import SuperTypes
+from manatide.core.types import Types
+from manatide.core.types import LandTypes
+
+from manatide.events import EventManaAdd
+from manatide.events import EventTap
 
 class Island(Card):
     name = "Island"
@@ -11,7 +14,7 @@ class Island(Card):
     subtype = [LandTypes.ISLAND]
 
     def ability(self, game):
-        linked_event = EventAddMana("blue")
+        linked_event = EventManaAdd("blue")
         event = EventTap(self, linked_event)
 
         game.event_queue.queue(event)

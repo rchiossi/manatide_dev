@@ -2,7 +2,7 @@ import importlib
 import re
 import uuid
 
-from util.log import log
+from manatide.util.log import log
 
 class Deck(object):
     def __init__(self, filename=None):

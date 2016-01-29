@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
-from manatide.deck import Deck
-from manatide.game import Game
-from manatide.gameloop import GameLoop
-from manatide.player import ConsolePlayer
-from manatide.zone import Zone
+from manatide.core.deck import Deck
+from manatide.core.game import Game
+from manatide.core.gameloop import GameLoop
+from manatide.core.player import ConsolePlayer
+from manatide.core.zone import Zone
 
-from util.log import log
+from manatide.util.log import log
 
 def main():
     players = [ConsolePlayer("test_deck.txt"), ConsolePlayer("test_deck.txt")]

@@ -1,12 +1,12 @@
 import uuid
 
-from manatide.events import EventStatus
-from manatide.events import EventPriorityPass
+from manatide.core.event import EventStatus
+from manatide.events.event_priority_pass import EventPriorityPass
 
-from util.log import log
+from manatide.util.log import log
 
 class Rule(object):
-    event_type = None
+    target_event = None
 
     prepare = None
     resolve = None
@@ -16,8 +16,15 @@ class Rule(object):
         self.id = uuid.uuid4()
 
     def filter(self, event, game):
-        log.d("filter(): {}".format(self))
         return True
+
+    def check_filter(self, event, game):
+        log.d("check_filter(): {}".format(self))
+
+        if event.__class__ is not self.target_event:
+            return False
+
+        return self.filter(event, game)
 
     def apply(self, event):
         log.d("apply(): {}".format(self))
@@ -33,14 +40,4 @@ class Rule(object):
 
     def __str__(self):
         return "{}[{}]".format(self.__class__.__name__, self.id.hex[:8])
-
-class RulePriorityPass(Rule):
-    event_type = EventPriorityPass
-
-    def prepare(self, event, game):
-        log.d("prepare(): {}".format(self))
-        if event.player is game.players[0]:
-            event.status = EventStatus.OK
-        else:
-            event.status = EventStatus.ABORTED
 
