@@ -39,5 +39,8 @@ class RulePriorityPass(Rule):
 
     def prepare(self, event, game):
         log.d("prepare(): {}".format(self))
-        event.status = EventStatus.OK
+        if event.player is game.players[0]:
+            event.status = EventStatus.OK
+        else:
+            event.status = EventStatus.ABORTED
 
