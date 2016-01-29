@@ -14,11 +14,19 @@ class EventQueue(object):
 
         self.game = game
 
-    def queue(self, event):
-        self.event_queue.insert(0, event)
+    def queue(self, event, priority=False):
+        if event is None:
+            log.w("NULL event queued")
+            return
 
-    def queue_priority(self, event):
-        self.event_queue.append(event)
+        for rule in self.game.rules:
+            if rule.filter(event, self.game):
+                rule.apply(event)
+
+        if priority:
+            self.event_queue.append(event)
+        else:
+            self.event_queue.insert(0, event)
 
     def step(self):
         if len(self.event_queue) is 0:
@@ -28,14 +36,6 @@ class EventQueue(object):
 
         log.i("EventQueue: {}".format(event))
 
-        for obj in self.game.objects:
-            if event.hook in obj.__dict__.keys():
-                getattr(obj, event.hook)(event)
-
-        for rule in self.game.rules:
-            if event.hook in rule.__dict__.keys():
-                getattr(self.game.rules, event.hook)(event)
-
         status = event.process(self.game)
 
         log.d("EventQueue: {} - {}".format(event, status))
@@ -44,28 +44,17 @@ class EventQueue(object):
 
 
 class Event(object):
-    hook = None
-
     def __init__(self, player):
         self.status = EventStatus.UNVERIFIED
-
         self.player = player
+        self.rules = {"prepare": [], "resolve": [], "done": []}
 
-        self.hooks = {"pre": [], "ongoing": [], "post": []}
+    def process_rules(self, game, stage):
+        for rule in self.rules[stage]:
+            getattr(rule, stage)(self, game)
 
-    def process_hooks(self, game, hook_name):
-        for hook in self.hooks[hook_name]:
-            status = hook(game, self)
-
-            if status is EventStatus.UNVERIFIED:
-                continue
-
-            self.status = status
-
-            if status is EventStatus.ABORTED:
-                return False
-
-        return self.status is EventStatus.OK
+            if self.status is EventStatus.ABORTED:
+                return
 
     def prepare(self, game):
         pass
@@ -74,17 +63,30 @@ class Event(object):
         pass
 
     def process(self, game):
-        if not self.process_hooks(game, "pre"):
+        for rule in self.rules["prepare"]:
+            rule.prepare(self, game)
+
+            if self.status is EventStatus.ABORTED:
+                break
+
+        if self.status is not EventStatus.OK:
             return self.status
 
         self.prepare(game)
 
-        if not self.process_hooks(game, "ongoing"):
+        for rule in self.rules["resolve"]:
+            rule.resolve(self, game)
+
+            if self.status is EventStatus.ABORTED:
+                break
+
+        if self.status is not EventStatus.OK:
             return self.status
 
         self.resolve(game)
 
-        self.process_hooks(game, "post")
+        for rule in self.rules["done"]:
+            rule.done(self, game)
 
         return self.status
 
@@ -93,8 +95,6 @@ class Event(object):
 
 
 class EventTransition(Event):
-    hook = "hook_transition"
-
     def __init__(self, player, objs, zone):
         super().__init__(player)
 
@@ -116,8 +116,6 @@ class EventTransition(Event):
 
 
 class EventTap(Event):
-    hook = "hook_tap"
-
     def __init__(self, player, objs, linked_event=None):
         if objs is None:
             log.e("No object for event {}".format(self))
@@ -134,8 +132,6 @@ class EventTap(Event):
 
 
 class EventAddMana(Event):
-    hook = "hook_add_mana"
-
     def __init__(self, player, color, amount=1):
         self.color = color
         self.amount = amount
@@ -145,8 +141,6 @@ class EventAddMana(Event):
 
 
 class EventPriorityPass(Event):
-    hook = "hook_priority_pass"
-
     def resolve(self, game):
         game.players.rotate(1)
 

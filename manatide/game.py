@@ -7,6 +7,8 @@ from enum import Enum
 from manatide.objects import Card
 from manatide.zone import Zone
 
+from manatide.rules import RulePriorityPass
+
 from util.log import log
 
 class GameState(Enum):
@@ -24,7 +26,7 @@ class Game(object):
 
         self.objects = []
         #TODO: Load rules
-        self.rules = []
+        self.rules = [RulePriorityPass()]
 
         self.players = collections.deque(players)
         self.active_player = None

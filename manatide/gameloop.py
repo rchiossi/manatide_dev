@@ -1,9 +1,9 @@
 from enum import Enum
 
-from manatide.event import EventQueue
-from manatide.event import EventStatus
+from manatide.events import EventQueue
+from manatide.events import EventStatus
 
-from manatide.event import EventPriorityPass
+from manatide.events import EventPriorityPass
 
 from manatide.game import GameState
 
