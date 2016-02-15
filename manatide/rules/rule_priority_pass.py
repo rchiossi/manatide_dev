@@ -3,7 +3,8 @@ from manatide.core.rule import Rule
 from manatide.events import EventPriorityPass
 
 class RulePriorityPass(Rule):
-    target_event = EventPriorityPass
+    def load(self):
+        self.target_event = EventPriorityPass
 
     def prepare(self, event, game):
         if event.player is game.players[0]:

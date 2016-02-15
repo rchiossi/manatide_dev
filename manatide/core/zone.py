@@ -1,5 +1,7 @@
 import uuid
 
+from enum import Enum
+
 from manatide.util.log import log
 
 class Zone(object):
@@ -43,6 +45,9 @@ class Zone(object):
             log.e("Null card removed to zone {}".format(zone.name))
 
         self.objects.remove(card)
+
+    def __iter__(self):
+        return self.objects.__iter__()
 
     def __str__(self):
         return "Zone[{}]".format(self.name)

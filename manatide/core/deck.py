@@ -30,19 +30,20 @@ class Deck(object):
             filename = Deck.get_file_name(cardname)
             classname = Deck.get_class_name(cardname)
 
-            log.w("cards.{}.{}".format(filename, classname))
-
             try:
-                card = importlib.import_module("cards.{}".format(filename))
-                card = getattr(card, classname)
+                card_module = importlib.import_module("cards.{}".format(filename))
+                card_class = getattr(card_module, classname)
             except:
                 log.e("Card not found: {}".format(cardname))
 
+            card = card_class()
+            log.d("Card Loaded: {}".format(card))
+
             for i in range(amount):
                 if not in_sideboard:
-                    self.main.append(card())
+                    self.main.append(card)
                 else:
-                    self.side.append(card())
+                    self.side.append(card)
 
     @staticmethod
     def get_file_name(cardname):

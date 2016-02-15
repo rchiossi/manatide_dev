@@ -19,6 +19,12 @@ class EventQueue(object):
             log.w("NULL event queued")
             return
 
+        if Event not in event.__class__.__bases__:
+            log.w("Cannot queue {} as it is a class, not an object. Missing ()?".format(event))
+            return
+
+        log.d("Queueing event: {}".format(event))
+
         for rule in self.game.rules:
             if rule.check_filter(event, self.game):
                 rule.apply(event)
@@ -40,21 +46,26 @@ class EventQueue(object):
 
         log.d("EventQueue: {} - {}".format(event, status))
 
+        if status is EventStatus.OK:
+            self.game.event_history.append(event)
+
         return status
 
 
 class Event(object):
-    def __init__(self, player):
-        self.status = EventStatus.UNVERIFIED
-        self.player = player
+    def __init__(self, player=None, status=None, *args):
         self.rules = {"prepare": [], "resolve": [], "done": []}
+        self.player = player
 
-    def process_rules(self, game, stage):
-        for rule in self.rules[stage]:
-            getattr(rule, stage)(self, game)
+        if status is None:
+            self.status = EventStatus.UNVERIFIED
+        else:
+            self.status = status
 
-            if self.status is EventStatus.ABORTED:
-                return
+        self.load(player, status, *args)
+
+    def load(self, player, *args):
+        pass
 
     def prepare(self, game):
         pass
@@ -67,6 +78,7 @@ class Event(object):
             rule.prepare(self, game)
 
             if self.status is EventStatus.ABORTED:
+                log.d("{} aborted on prepare by rule {}".format(self, rule))
                 break
 
         if self.status is not EventStatus.OK:
@@ -89,6 +101,9 @@ class Event(object):
             rule.done(self, game)
 
         return self.status
+
+    def __eq__(self, event_type):
+        return self.__class__ is event_type
 
     def __str__(self):
         return self.__class__.__name__

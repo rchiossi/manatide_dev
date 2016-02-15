@@ -4,10 +4,13 @@ import uuid
 
 from enum import Enum
 
+from manatide.core.event import EventQueue
 from manatide.core.objects import Card
+from manatide.core.turn import Turn
 from manatide.core.zone import Zone
 
 from manatide.rules import RulePriorityPass
+from manatide.rules import RuleAdvanceTurn
 
 from manatide.util.log import log
 
@@ -26,10 +29,15 @@ class Game(object):
 
         self.objects = []
         #TODO: Load rules
-        self.rules = [RulePriorityPass()]
+        self.rules = [RulePriorityPass(), RuleAdvanceTurn()]
 
         self.players = collections.deque(players)
         self.active_player = None
+
+        self.event_queue = EventQueue(self)
+        self.event_history = []
+
+        self.turn = Turn(self)
 
         self.manapool = {
                 "black": 0,
@@ -61,6 +69,9 @@ class Game(object):
             self.players.rotate(1)
 
         self.active_player = self.players[0]
+
+    def queue(self, event, priority=False):
+        self.event_queue.queue(event, priority)
 
     def __str__(self):
         return "Game[{}]".format(self.id)

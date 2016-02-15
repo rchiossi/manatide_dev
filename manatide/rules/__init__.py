@@ -1,1 +1,2 @@
 from manatide.rules.rule_priority_pass import RulePriorityPass
+from manatide.rules.rule_advance_turn import RuleAdvanceTurn

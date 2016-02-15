@@ -18,13 +18,13 @@ class log:
 
     @staticmethod
     def e(msg):
-        entry = "[%s][!] %s" % (time.strftime("%I:%M.%S"), msg)
+        entry = "[%s][!!!] %s" % (time.strftime("%I:%M.%S"), msg)
         log._log(entry, 0)
         raise(Exception(msg))
 
     @staticmethod
     def w(msg):
-        entry = "[%s][*] %s" % (time.strftime("%I:%M.%S"), msg)
+        entry = "[%s][!] %s" % (time.strftime("%I:%M.%S"), msg)
         log._log(entry, 1)
 
     @staticmethod

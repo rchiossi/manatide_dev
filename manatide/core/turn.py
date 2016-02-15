@@ -1,66 +1,93 @@
+from enum import Enum
+
+from manatide.core.event import EventStatus;
+
+from manatide.events import EventBeginningPhase;
+from manatide.events import EventUpkeepStep;
+from manatide.events import EventDrawStep;
+from manatide.events import EventMainPhase;
+from manatide.events import EventCombatPhase;
+from manatide.events import EventDeclareAttackersStep;
+from manatide.events import EventDeclareBlockersStep;
+from manatide.events import EventCombatDamageStep;
+from manatide.events import EventEndOfCombatStep;
+from manatide.events import EventEndPhase;
+from manatide.events import EventCleanupStep;
+
+from manatide.util.log import log
+
+class TurnPhase(Enum):
+    BEGINNING = 0
+    MAIN = 1
+    COMBAT = 2
+    ENDING = 3
+
+
+class TurnStep(Enum):
+    UNTAP = 0
+    UPKEEP = 1
+    DRAW = 2
+    FIRST_MAIN = 3
+    BEGINNING_OF_COMBAT = 4
+    DECLARE_ATTACKERS = 5
+    DECLARE_BLOCKERS = 6
+    COMBAT_DAMAGE = 7
+    END_OF_COMBAT = 8
+    SECOND_MAIN = 9
+    END_STEP = 10
+    CLEANUP = 11
+
+
 class Turn(object):
-    def __init__(self, gamestate, player):
-        self.gamestate = gamestate
-        self.active_player = player
+    def __init__(self, game):
+        self.game = game
 
         self.phase = None
         self.step = None
 
-    def beginning_phase(self):
-        self.phase = "beginning"
+    def reset(self):
+        self.phase = None
+        self.step = None
 
-        self.untap_step()
-        self.upkeep_step()
-        self.draw_step()
+    def advance(self):
+        if self.step is None:
+            log.d("Turn: Advance to UNTAP STEP")
 
-    def untap_step():
-        self.step = "untap"
+            self.phase = TurnPhase.BEGINNING
+            self.step = TurnStep.UNTAP
 
-        #TODO: handle phase-in/phase-out
+            self.game.queue(EventBeginningPhase(status=EventStatus.OK))
 
-        for card in self.gamestate.zone["battlefield"].cards:
-            if card.player is self.active_player:
-                #TODO Hook continuous effects
-                card.untap()
+        elif self.step is TurnStep.UNTAP:
+            log.d("Turn: Advance to UPKEEP STEP")
 
-    def upkeep_step(self):
-        self.step = "upkeep"
+            self.step = TurnStep.UPKEEP
 
-    def draw_step(self):
-        self.step = "draw"
+            self.game.queue(EventUpkeepStep(status=EventStatus.OK), True)
 
-        self.gamestate.draw(self.active_player)
+        elif self.step is TurnStep.UPKEEP:
+            log.d("Turn: Advance to DRAW STEP")
 
-    def main_phase(self, pre_combat):
-        if pre_combat:
-            self.phase = "pre-combat main"
-        else:
-            self.phase = "pos-combat main"
+            self.step = TurnStep.DRAW
 
-    def combat_phase(self):
-        pass
+            self.game.queue(EventDrawStep(status=EventStatus.OK))
 
-    def beginning_of_combat_step(self):
-        pass
+        elif self.step is TurnStep.DRAW:
+            log.d("Turn: Advance to FIRST MAIN PHASE")
 
-    def declare_attackers_step(self):
-        pass
+            self.phase = TurnPhase.MAIN
+            self.step = TurnStep.FIRST_MAIN
 
-    def declare_blockers_step(self):
-        pass
+            self.game.queue(EventMainPhase(status=EventStatus.OK))
 
-    def combat_damage_step(self):
-        pass
+        elif self.step is TurnStep.FIRST_MAIN:
+            log.d("Turn: Advance to COMBAT PHASE")
 
-    def end_of_combat_step(self):
-        pass
+            self.phase = TurnPhase.COMBAT
+            self.step = TurnStep.BEGINNING_OF_COMBAT
 
-    def ending_phase(self):
-        pass
+            self.game.queue(EventCombatPhase(status=EventStatus.OK))
 
-    def end_step(self):
-        pass
 
-    def cleanup_step(self):
-        pass
+
 

@@ -2,9 +2,7 @@ from manatide.core.event import Event
 from manatide.util.log import log
 
 class EventTransition(Event):
-    def __init__(self, player, objs, zone):
-        super().__init__(player)
-
+    def load(self, player, status, objs, zone):
         if objs is None:
             log.e("No object for event {}".format(self))
 

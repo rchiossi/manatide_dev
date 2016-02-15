@@ -3,11 +3,14 @@ from manatide.core.types import Types
 from manatide.core.types import CreatureTypes
 
 class FugitiveWizard(Card):
-    name = "Fugitive Wizard"
+    def load(self):
+        self.name = "Fugitive Wizard"
 
-    type = [Types.CREATURE]
-    subtype = [CreatureTypes.HUMAN, CreatureTypes.WIZARD]
+        self.manacost = "{U}"
 
-    power = 1
-    toughness = 1
+        self.type = [Types.CREATURE]
+        self.subtype = [CreatureTypes.HUMAN, CreatureTypes.WIZARD]
+
+        self.power = 1
+        self.toughness = 1
 
