@@ -56,21 +56,21 @@ class Turn(object):
             self.phase = TurnPhase.BEGINNING
             self.step = TurnStep.UNTAP
 
-            self.game.queue(EventBeginningPhase(status=EventStatus.OK))
+            self.game.queue(EventBeginningPhase(self.game, status=EventStatus.OK))
 
         elif self.step is TurnStep.UNTAP:
             log.d("Turn: Advance to UPKEEP STEP")
 
             self.step = TurnStep.UPKEEP
 
-            self.game.queue(EventUpkeepStep(status=EventStatus.OK), True)
+            self.game.queue(EventUpkeepStep(self.game, status=EventStatus.OK), True)
 
         elif self.step is TurnStep.UPKEEP:
             log.d("Turn: Advance to DRAW STEP")
 
             self.step = TurnStep.DRAW
 
-            self.game.queue(EventDrawStep(status=EventStatus.OK))
+            self.game.queue(EventDrawStep(self.game, status=EventStatus.OK))
 
         elif self.step is TurnStep.DRAW:
             log.d("Turn: Advance to FIRST MAIN PHASE")
@@ -78,7 +78,7 @@ class Turn(object):
             self.phase = TurnPhase.MAIN
             self.step = TurnStep.FIRST_MAIN
 
-            self.game.queue(EventMainPhase(status=EventStatus.OK))
+            self.game.queue(EventMainPhase(self.game, status=EventStatus.OK))
 
         elif self.step is TurnStep.FIRST_MAIN:
             log.d("Turn: Advance to COMBAT PHASE")
@@ -86,7 +86,14 @@ class Turn(object):
             self.phase = TurnPhase.COMBAT
             self.step = TurnStep.BEGINNING_OF_COMBAT
 
-            self.game.queue(EventCombatPhase(status=EventStatus.OK))
+            self.game.queue(EventCombatPhase(self.game, status=EventStatus.OK))
+
+        elif self.step is TurnStep.BEGINNING_OF_COMBAT:
+            log.d("Turn: Advance to DECLARE ATTACKERS")
+
+            self.step = TurnStep.DECLARE_ATTACKERS
+
+            self.game.queue(EventDeclareAttackersStep(self.game, status=EventStatus.OK))
 
 
 

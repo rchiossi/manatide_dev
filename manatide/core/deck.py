@@ -54,6 +54,7 @@ class Deck(object):
 
         return name
 
+    @staticmethod
     def get_class_name(cardname):
         name = cardname.lower()
         name = name.replace("'", "")

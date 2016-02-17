@@ -8,7 +8,7 @@ from manatide.events import EventManaAdd
 from manatide.events import EventTap
 
 class Island(Card):
-    def load(self):
+    def properties(self):
         self.name = "Island"
 
         self.supertype = [SuperTypes.BASIC]
@@ -19,7 +19,7 @@ class Island(Card):
 
     def tap_for_mana(self, game):
         linked_event = EventManaAdd(self.controller, EventStatus.OK, "blue")
-        event = EventTap(self.controller, None, self, linked_event)
+        event = EventTap(game, self.controller, None, self, linked_event)
 
         game.event_queue.queue(event)
 

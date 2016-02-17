@@ -53,8 +53,10 @@ class EventQueue(object):
 
 
 class Event(object):
-    def __init__(self, player=None, status=None, *args):
+    def __init__(self, game, player=None, status=None, *args, **kargs):
         self.rules = {"prepare": [], "resolve": [], "done": []}
+
+        self.game = game
         self.player = player
 
         if status is None:
@@ -62,15 +64,15 @@ class Event(object):
         else:
             self.status = status
 
-        self.load(player, status, *args)
+        self.load(game, player, status, *args, **kargs)
 
     def load(self, player, *args):
         pass
 
-    def prepare(self, game):
+    def prepare(self):
         pass
 
-    def resolve(self, game):
+    def resolve(self):
         pass
 
     def process(self, game):
@@ -84,7 +86,7 @@ class Event(object):
         if self.status is not EventStatus.OK:
             return self.status
 
-        self.prepare(game)
+        self.prepare()
 
         for rule in self.rules["resolve"]:
             rule.resolve(self, game)
@@ -95,7 +97,7 @@ class Event(object):
         if self.status is not EventStatus.OK:
             return self.status
 
-        self.resolve(game)
+        self.resolve()
 
         for rule in self.rules["done"]:
             rule.done(self, game)

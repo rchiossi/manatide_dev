@@ -1,23 +1,22 @@
 from manatide.core.event import Event
 from manatide.core.event import EventStatus
 
+from manatide.events import EventDraw
+
 class EventBeginningPhase(Event):
-    def resolve(self, game):
-        game.queue(EventUntapStep(), True);
+    def resolve(self):
+        self.game.queue(EventUntapStep(self.game, status=EventStatus.OK), True);
 
 
 class EventUntapStep(Event):
-    def load(self, playeri, status):
-        self.status = EventStatus.OK
-
-    def resolve(self, game):
+    def resolve(self):
         #TODO: Handle Phasing
 
-        for card in game.zones["battlefield"]:
+        for card in self.game.zones["battlefield"]:
             if card.controller is game.active_player:
-                game.queue(EventUntap(card))
+                self.game.queue(EventUntap(self.game, objs=[card]))
 
-        game.turn.advance()
+        self.game.turn.advance()
 
 
 class EventUpkeepStep(Event):
@@ -25,7 +24,8 @@ class EventUpkeepStep(Event):
 
 
 class EventDrawStep(Event):
-    pass
+    def resolve(self):
+        self.game.queue(EventDraw(self.game, self.game.active_player, EventStatus.OK))
 
 
 class EventMainPhase(Event):
@@ -33,8 +33,8 @@ class EventMainPhase(Event):
 
 
 class EventCombatPhase(Event):
-    def resolve(self, game):
-        game.queue(EventBeginningOfCombatStep(), True);
+    def resolve(self):
+        self.game.queue(EventBeginningOfCombatStep(self.game, status=EventStatus.OK), True);
 
 
 class EventBeginningOfCombatStep(Event):
@@ -58,8 +58,8 @@ class EventEndOfCombatStep(Event):
 
 
 class EventEndPhase(Event):
-    def resolve(self, game):
-        game.queue(EventEndStep(), True);
+    def resolve(self):
+        self.game.queue(EventEndStep(), True);
 
 
 class EventEndStep(Event):

@@ -52,9 +52,9 @@ class Card(GenericObject):
         self.facedown = False
         self.phaseout = False
 
-        self.load()
+        self.properties()
 
-    def load(self):
+    def properties(self):
         pass
 
     def __str__(self):

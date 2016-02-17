@@ -20,7 +20,7 @@ class Zone(object):
         self.staged.append(card)
 
     def commit_staged(self):
-        for obj in staged:
+        for obj in self.staged:
             obj.previous_zone = obj.zone
             obj.previous_zone.remove_object(obj)
             obj.zone = self

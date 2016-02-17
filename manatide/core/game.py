@@ -64,6 +64,11 @@ class Game(object):
             self.zones["hand", player.id] = Zone("hand")
             self.zones["graveyard", player.id] = Zone("graveyard")
 
+            #TODO: handle deck loading
+            for card in player.deck.main:
+                card.load(library, player)
+                library.add_object(card)
+
     def set_starting_player(self, pid):
         while self.players[0].id is not pid:
             self.players.rotate(1)

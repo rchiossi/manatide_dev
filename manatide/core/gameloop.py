@@ -25,7 +25,22 @@ class GameLoop(object):
 
             print("echo: {}".format(cmd))
 
-            if 'exit' in cmd:
-                self.game.state = GameState.TERMINATED
-            elif 'pass' in cmd:
-                self.game.queue(EventPriorityPass(self.game.players[0]))
+            tokens = cmd.split(" ")
+
+            self.handle_cmd(tokens[0], tokens[1:])
+
+    def handle_cmd(self, cmd, args):
+        if cmd == 'exit' or cmd == 'quit' or cmd == 'q':
+            self.game.state = GameState.TERMINATED
+        elif cmd == 'pass' or cmd == 'p':
+            self.game.queue(EventPriorityPass(self.game, self.game.players[0]))
+        elif cmd == 'info' or cmd == 'i':
+            if args[0] == "library":
+                zone = self.game.zones["library", self.game.active_player.id]
+            elif args[0] == "hand":
+                zone = self.game.zones["hand", self.game.active_player.id]
+
+            print(zone)
+            for obj in zone.objects:
+                print(obj)
+

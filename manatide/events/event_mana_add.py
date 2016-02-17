@@ -1,10 +1,10 @@
 from manatide.core.event import Event
 
 class EventManaAdd(Event):
-    def load(self, playeri, status, color, amount=1):
+    def load(self, game, player, status, color, amount=1):
         self.color = color
         self.amount = amount
 
-    def resolve(self, game):
-        game.manapool[self.color] += self.amount
+    def resolve(self):
+        self.game.manapool[self.color] += self.amount
 
