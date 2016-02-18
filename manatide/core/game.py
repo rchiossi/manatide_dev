@@ -68,6 +68,7 @@ class Game(object):
             for card in player.deck.main:
                 card.load(library, player)
                 library.add_object(card)
+                self.objects.append(card)
 
     def set_starting_player(self, pid):
         while self.players[0].id is not pid:

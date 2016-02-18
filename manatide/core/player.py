@@ -21,6 +21,7 @@ class Player(object):
         return "Player[{}]".format(self.id.hex[:8])
 
 
+import readline
 class ConsolePlayer(Player):
     def read(self):
         return input('{}: '.format(self))
