@@ -15,6 +15,8 @@ class GameLoop(object):
         self.game = game
 
     def loop(self):
+        self.game.turn.advance()
+
         while self.game.state is not GameState.TERMINATED:
 
             while self.game.event_queue.step() is not None:

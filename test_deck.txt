@@ -1,2 +1,2 @@
-20 island
-40 Fugitive Wizard
+2 island
+4 Fugitive Wizard

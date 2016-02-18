@@ -27,7 +27,7 @@ class Zone(object):
 
             obj.update_id()
 
-        self.objects.append(self.staged)
+        self.objects += self.staged
 
         committed = self.staged
         self.staged = []

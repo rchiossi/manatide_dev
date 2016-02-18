@@ -36,12 +36,11 @@ class Deck(object):
             except:
                 log.e("Card not found: {}".format(cardname))
 
-            card = card_class()
-            log.d("Card Loaded: {}".format(card))
+            log.d("Card Loaded: {}".format(card_class))
 
             for i in range(amount):
                 if not in_sideboard:
-                    self.main.append(card)
+                    self.main.append(card_class())
                 else:
                     self.side.append(card)
 

@@ -6,6 +6,12 @@ class RuleAdvanceTurn(Rule):
         self.target_event = EventPriorityPass
 
     def done(self, event, game):
-        if len(game.event_history) > 0 and game.event_history[-1] == EventPriorityPass:
-            game.turn.advance()
+        if len(game.event_history) < len(game.players) - 1:
+            return
+
+        for i in range(1, len(game.players)):
+            if game.event_history[-i] != EventPriorityPass:
+                return
+
+        game.turn.advance()
 
