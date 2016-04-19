@@ -8,9 +8,16 @@ class EventStatus(Enum):
     UNVERIFIED = 2
 
 
+class EventQueueStatus(Enum):
+    IDLE = 0
+    BUSY = 1
+    WAITING = 2
+
+
 class EventQueue(object):
     def __init__(self, game):
         self.event_queue = []
+        self.status = EventQueueStatus.IDLE
 
         self.game = game
 
@@ -34,7 +41,21 @@ class EventQueue(object):
         else:
             self.event_queue.insert(0, event)
 
+        if self.status == EventQueueStatus.IDLE:
+            self.status = EventQueueStatus.BUSY
+
     def step(self):
+        if self.status == EventQueueStatus.IDLE:
+            return
+
+        elif self.status == EventQueueStatus.BUSY:
+            if self.process_event() is None:
+                self.status = EventQueueStatus.IDLE
+
+        elif self.status == EventQueueStatus.WAITING:
+            pass
+
+    def process_event(self):
         if len(self.event_queue) is 0:
             return None
 

@@ -1,6 +1,7 @@
 from enum import Enum
 
 from manatide.core.event import EventStatus
+from manatide.core.event import EventQueueStatus
 from manatide.core.game import GameState
 
 from manatide.events import EventPriorityPass
@@ -18,18 +19,16 @@ class GameLoop(object):
         self.game.turn.advance()
 
         while self.game.state is not GameState.TERMINATED:
+            self.game.event_queue.step()
 
-            while self.game.event_queue.step() is not None:
-                continue
+            for player in self.game.players:
+                cmd = player.read()
 
-            player = self.game.players[0]
+                if cmd == None:
+                    continue
 
-            print()
-            cmd = player.read()
-            print()
-
-            tokens = cmd.split(" ")
-            self.cmd_handler(player, tokens[0], tokens[1:])
+                tokens = cmd.split(" ")
+                self.cmd_handler(player, tokens[0], tokens[1:])
 
     def cmd_handler(self, player, cmd, args):
         if cmd == 'exit' or cmd == 'quit' or cmd == 'q':
@@ -41,7 +40,7 @@ class GameLoop(object):
         elif cmd == 'cast' or cmd == 'c':
             self.handle_cast(player, args)
         else:
-            self.game.players[0].write("Invalid command: '{}'".format(cmd))
+            player.write("Invalid command: '{}'".format(cmd))
 
     def find_player(self, player_id):
         for player in self.game.players:

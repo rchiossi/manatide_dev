@@ -3,17 +3,14 @@
 from manatide.core.deck import Deck
 from manatide.core.game import Game
 from manatide.core.gameloop import GameLoop
-from manatide.core.player import ConsolePlayer
 from manatide.core.zone import Zone
 
 from manatide.util.log import log
 
 def main():
-    players = [ConsolePlayer("test_deck.txt"), ConsolePlayer("test_deck.txt")]
+    game = Game(2)
 
-    game = Game(players)
-
-    game.set_starting_player(players[0].id)
+    game.set_starting_player(game.players[0].id)
 
     gameloop = GameLoop(game)
 

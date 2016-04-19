@@ -6,6 +6,7 @@ from enum import Enum
 
 from manatide.core.event import EventQueue
 from manatide.core.objects import Card
+from manatide.core.player import ConsolePlayer
 from manatide.core.turn import Turn
 from manatide.core.zone import Zone
 
@@ -19,9 +20,9 @@ class GameState(Enum):
     TERMINATED = 1
 
 class Game(object):
-    def __init__(self, players):
-        if players is None or len(players) == 0:
-            log.e("Invalid players list")
+    def __init__(self, num_players):
+        if num_players < 2:
+            log.e("Invalid number of players")
 
         self.id = uuid.uuid4()
 
@@ -31,7 +32,11 @@ class Game(object):
         #TODO: Load rules
         self.rules = [RulePriorityPass(), RuleAdvanceTurn()]
 
-        self.players = collections.deque(players)
+        #TODO: Allow different types of players
+        self.players = collections.deque()
+        for i in range(num_players):
+            self.players.append(ConsolePlayer(self))
+
         self.active_player = None
 
         self.event_queue = EventQueue(self)
@@ -56,7 +61,7 @@ class Game(object):
                 "command": Zone("command")
                 }
 
-        for player in players:
+        for player in self.players:
             library = Zone("library")
             library.exhausted = False
 
@@ -65,6 +70,7 @@ class Game(object):
             self.zones["graveyard", player.id] = Zone("graveyard")
 
             #TODO: handle deck loading
+            player.load_deck()
             for card in player.deck.main:
                 card.load(library, player)
                 library.add_object(card)
