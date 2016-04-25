@@ -5,7 +5,7 @@ from manatide.events import EventDraw
 
 class EventBeginningPhase(Event):
     def resolve(self):
-        self.game.queue(EventUntapStep(self.game, status=EventStatus.OK), True);
+        self.queue(EventUntapStep(self.game, status=EventStatus.OK), True);
 
 
 class EventUntapStep(Event):
@@ -14,7 +14,7 @@ class EventUntapStep(Event):
 
         for card in self.game.zones["battlefield"]:
             if card.controller is game.active_player:
-                self.game.queue(EventUntap(self.game, objs=[card]))
+                self.queue(EventUntap(self.game, objs=[card]))
 
         self.game.turn.advance()
 
@@ -25,7 +25,7 @@ class EventUpkeepStep(Event):
 
 class EventDrawStep(Event):
     def resolve(self):
-        self.game.queue(EventDraw(self.game, self.game.active_player, EventStatus.OK))
+        self.queue(EventDraw(self.game, self.game.active_player, EventStatus.OK))
 
 
 class EventMainPhase(Event):
@@ -34,7 +34,7 @@ class EventMainPhase(Event):
 
 class EventCombatPhase(Event):
     def resolve(self):
-        self.game.queue(EventBeginningOfCombatStep(self.game, status=EventStatus.OK), True);
+        self.queue(EventBeginningOfCombatStep(self.game, status=EventStatus.OK), True);
 
 
 class EventBeginningOfCombatStep(Event):
@@ -59,7 +59,7 @@ class EventEndOfCombatStep(Event):
 
 class EventEndPhase(Event):
     def resolve(self):
-        self.game.queue(EventEndStep(), True);
+        self.queue(EventEndStep(), True);
 
 
 class EventEndStep(Event):

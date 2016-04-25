@@ -82,8 +82,5 @@ class Game(object):
 
         self.active_player = self.players[0]
 
-    def queue(self, event, priority=False):
-        self.event_queue.queue(event, priority)
-
     def __str__(self):
         return "Game[{}]".format(self.id)

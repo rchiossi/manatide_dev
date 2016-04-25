@@ -36,7 +36,7 @@ class EventDraw(Event):
             return
 
         objs = [library.objects[-1]]
-        self.game.queue(EventTransition(self.game, self.player, EventStatus.OK, objs, "hand"), True)
+        self.queue(EventTransition(self.game, self.player, EventStatus.OK, objs, "hand"), True)
 
 
 

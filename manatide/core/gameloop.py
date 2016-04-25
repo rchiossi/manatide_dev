@@ -34,7 +34,7 @@ class GameLoop(object):
         if cmd == 'exit' or cmd == 'quit' or cmd == 'q':
             self.game.state = GameState.TERMINATED
         elif cmd == 'pass' or cmd == 'p':
-            self.game.queue(EventPriorityPass(self.game, self.game.players[0]))
+            self.game.event_queue.queue(EventPriorityPass(self.game, self.game.players[0]))
         elif cmd == 'info' or cmd == 'i':
             self.handle_info(player, args)
         elif cmd == 'cast' or cmd == 'c':
@@ -115,5 +115,4 @@ class GameLoop(object):
 
         player.write(target)
 
-        #self.game.queue
 

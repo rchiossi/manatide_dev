@@ -10,10 +10,10 @@ class EventTap(Event):
         self.objs = objs
         self.linked_event = linked_event
 
-    def resolve(self, game):
+    def resolve(self):
         for obj in self.objs:
             obj.tapped = True
 
         if self.linked_event is not None:
-            game.queue(linked_event)
+            self.queue(linked_event)
 

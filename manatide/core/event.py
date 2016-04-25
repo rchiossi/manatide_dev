@@ -96,6 +96,9 @@ class Event(object):
     def resolve(self):
         pass
 
+    def queue(self, event, priority=False):
+        self.game.event_queue.queue(event, priority)
+
     def process(self, game):
         for rule in self.rules["prepare"]:
             rule.prepare(self, game)

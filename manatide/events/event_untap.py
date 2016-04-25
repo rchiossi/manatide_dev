@@ -12,10 +12,10 @@ class EventUntap(Event):
 
         self.status = EventStatus.OK
 
-    def resolve(self, game):
+    def resolve(self):
         for obj in self.objs:
             obj.tapped = False
 
         if self.linked_event is not None:
-            game.queue(linked_event)
+            self.queue(linked_event)
 
