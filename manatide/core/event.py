@@ -3,9 +3,11 @@ from enum import Enum
 from manatide.util.log import log
 
 class EventStatus(Enum):
-    ABORTED = 0
-    OK = 1
+    OK = 0
+    ABORTED = 1
     UNVERIFIED = 2
+    WAITING = 3
+    DONE = 4
 
 
 class EventQueueStatus(Enum):
@@ -59,7 +61,7 @@ class EventQueue(object):
         if len(self.event_queue) is 0:
             return None
 
-        event = self.event_queue.pop()
+        event = self.event_queue[-1]
 
         log.i("EventQueue: {}".format(event))
 
@@ -67,8 +69,11 @@ class EventQueue(object):
 
         log.d("EventQueue: {} - {}".format(event, status))
 
-        if status is EventStatus.OK:
-            self.game.event_history.append(event)
+        if status is not EventStatus.WAITING:
+            self.event_queue.remove(event)
+
+            if status is EventStatus.DONE:
+                self.game.event_history.append(event)
 
         return status
 
@@ -79,6 +84,8 @@ class Event(object):
 
         self.game = game
         self.player = player
+
+        self.wait_list = []
 
         if status is None:
             self.status = EventStatus.UNVERIFIED
@@ -96,21 +103,51 @@ class Event(object):
     def resolve(self):
         pass
 
+    def should_wait(self):
+        for event in self.wait_list:
+            if event.status is EventStatus.ABORTED:
+                self.status = EventStatus.ABORTED
+                return False
+            elif event.status is not DONE:
+                return True
+
+        return False
+
     def queue(self, event, priority=False):
         self.game.event_queue.queue(event, priority)
 
+    def wait_on(self, event, priority=False):
+        if event is None:
+            log.e("Cannot wait on NULL event")
+
+        if event == self:
+            log.e("An event cannot wait on itself")
+
+        if self.status is EventStatus.ABORTED:
+            log.e("Cannot wait od aborted event")
+
+        self.wait_list.append(event)
+        self.game.event_queue.queue(event, priority)
+
+        self.status = EventStatus.WAITING
+
     def process(self, game):
-        for rule in self.rules["prepare"]:
-            rule.prepare(self, game)
+        if self.status is not EventStatus.WAITING:
+            for rule in self.rules["prepare"]:
+                rule.prepare(self, game)
 
-            if self.status is EventStatus.ABORTED:
-                log.d("{} aborted on prepare by rule {}".format(self, rule))
-                break
+                if self.status is EventStatus.ABORTED:
+                    log.d("{} aborted on prepare by rule {}".format(self, rule))
+                    break
 
+            if self.status is not EventStatus.OK:
+                return self.status
+
+            self.prepare()
+
+        self.should_wait()
         if self.status is not EventStatus.OK:
             return self.status
-
-        self.prepare()
 
         for rule in self.rules["resolve"]:
             rule.resolve(self, game)
@@ -125,6 +162,8 @@ class Event(object):
 
         for rule in self.rules["done"]:
             rule.done(self, game)
+
+        self.status = EventStatus.DONE;
 
         return self.status
 
