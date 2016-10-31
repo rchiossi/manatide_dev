@@ -1,3 +1,3 @@
-** Manatide
+ ### Manatide
 
-- MTG engine in python
+MTG engine in python
